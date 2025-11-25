@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '../components/Button';
 import { MOCK_AVAILABILITY } from '../lib/mockData';
+import { getJstNow, createJstDate } from '../lib/utils';
 
 export default function WeeklyStatusPage() {
     return (
@@ -18,17 +19,19 @@ export default function WeeklyStatusPage() {
                     </thead>
                     <tbody>
                         {MOCK_AVAILABILITY.map((day) => {
-                            const date = new Date(day.date);
-                            const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-                            const dayOfWeekIndex = date.getDay();
+                            const dateObj = createJstDate(day.date);
+                            const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+                            const dayOfWeekIndex = dateObj.getDay();
                             const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][dayOfWeekIndex];
 
-                            // Logic for past check
-                            const now = new Date();
-                            // Reset now to start of day for date comparison
+                            // Logic for past check using JST
+                            const now = getJstNow();
                             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
                             const isToday = day.date === todayStr;
-                            const isPastDate = new Date(day.date) < new Date(todayStr);
+                            // Compare dates by resetting time to 00:00 for accurate date comparison
+                            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                            const isPastDate = dateObj < todayStart;
 
                             const currentHour = now.getHours();
 

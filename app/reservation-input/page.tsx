@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { MOCK_TIME_SLOTS_AM, MOCK_TIME_SLOTS_PM } from '../lib/mockData';
+import { getJstNow, createJstDate } from '../lib/utils';
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -14,13 +15,13 @@ export default async function ReservationInputPage({ searchParams }: Props) {
         return <div>Invalid parameters</div>;
     }
 
-    const dateObj = new Date(date);
+    const dateObj = createJstDate(date);
     const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][dateObj.getDay()];
     const dateStr = `${dateObj.getMonth() + 1}月${dateObj.getDate()}日 (${dayOfWeek})`;
     const timeSlots = ampm === 'am' ? MOCK_TIME_SLOTS_AM : MOCK_TIME_SLOTS_PM;
     const periodStr = ampm === 'am' ? '午前' : '午後';
 
-    const now = new Date();
+    const now = getJstNow();
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -41,9 +42,7 @@ export default async function ReservationInputPage({ searchParams }: Props) {
                     </thead>
                     <tbody>
                         {timeSlots.map((slot) => {
-                            const [hours, minutes] = slot.time.split(':').map(Number);
-                            const slotDate = new Date(date);
-                            slotDate.setHours(hours, minutes, 0, 0);
+                            const slotDate = createJstDate(date, slot.time);
 
                             const isPast = slotDate < now;
                             const isAvailable = slot.available && !isPast;

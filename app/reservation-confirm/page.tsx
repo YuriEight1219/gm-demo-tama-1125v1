@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '../components/Button';
 import { getSession } from '../lib/auth';
+import { createJstDate } from '../lib/utils';
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -17,7 +18,7 @@ export default async function ReservationConfirmPage({ searchParams }: Props) {
         return <div>Session expired</div>;
     }
 
-    const dateObj = new Date(date);
+    const dateObj = createJstDate(date);
     const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][dateObj.getDay()];
     const dateStr = `${dateObj.getMonth() + 1}月${dateObj.getDate()}日 (${dayOfWeek})`;
 
